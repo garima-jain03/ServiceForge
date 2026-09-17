@@ -61,11 +61,14 @@ public class TechnicianAvailabilityService {
 
         List<Job> existingJobs = dataStore.getJobsForTechnician(technicianId);
 
-        boolean hasConflict = existingJobs.stream()
-                .anyMatch(existing -> existing.getStartTime().equals(startTime));
-        // ^ Bug: this only catches an exact start-time match. It does not detect a genuine
-        //   interval overlap (e.g. an existing 9:00-11:00 job and a new 10:00-12:00 job for the
-        //   same technician), so overlapping bookings are silently accepted.
+        // Detect genuine interval overlaps. Two intervals [aStart,aEnd) and [bStart,bEnd)
+        // overlap iff aStart < bEnd && bStart < aEnd. Keep travel-buffer semantics unchanged
+        // in this focused fix.
+        boolean hasConflict = existingJobs.stream().anyMatch(existing -> {
+            LocalDateTime existingStart = existing.getStartTime();
+            LocalDateTime existingEnd = existing.getEndTime();
+            return startTime.isBefore(existingEnd) && existingStart.isBefore(endTime);
+        });
 
         if (hasConflict) {
             throw new IllegalStateException(
