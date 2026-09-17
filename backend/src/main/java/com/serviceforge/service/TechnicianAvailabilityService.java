@@ -47,13 +47,9 @@ public class TechnicianAvailabilityService {
     }
 
     /**
-     * Books a new job for a technician.
-     *
-     * KNOWN ISSUE (see pipeline/features/feature-1-technician-availability.md — "Known issue"):
-     * this method is supposed to reject a booking that overlaps an existing one for the same
-     * technician, but the check below only compares exact start times. Two jobs with different
-     * but overlapping start times are currently accepted silently instead of being rejected with
-     * a conflict error. Fixing this should not remove or ignore the travel-buffer decision above.
+     * Books a new job for a technician. Rejects any booking whose interval genuinely overlaps
+     * an existing one for the same technician (see rules/no-overlap-booking.md); exact-boundary
+     * adjacency is allowed, and conflicts are scoped per technician.
      */
     public Job bookJob(Long technicianId, String customerName, LocalDateTime startTime, LocalDateTime endTime) {
         Technician technician = dataStore.findTechnician(technicianId)
