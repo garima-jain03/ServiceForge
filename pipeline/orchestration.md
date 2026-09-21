@@ -10,7 +10,7 @@ Anyone — human or agent — can kick this off with a single instruction:
 
 That one line is the only input. Everything else below is how it gets turned into a shipped feature.
 
-## The three steps
+## The four steps
 
 ### 1 — BA (turns intent into a spec)
 
@@ -20,19 +20,26 @@ That one line is the only input. Everything else below is how it gets turned int
 - **What it must check first:** every existing file under `pipeline/features/` and `pipeline/decisions/`, so the new spec correctly names what it depends on instead of guessing.
 - **Output:** one committed spec file. Nothing gets built yet.
 
-### 2 — Developer (turns the spec into code)
+### 2 — Architect (turns the spec into a reviewed design + plan)
+
+- **Role definition:** `.claude/agents/architect-agent.md`
+- **Skills it loads:** `.claude/skills/build-code-skill/SKILL.md` and, if the spec implies a new/changed model, `.claude/skills/migration-safety-skill/SKILL.md`.
+- **What it does:** turns the committed spec into `pipeline/architecture-adr.md` (data flow, dependencies, scalability, tech-selection rationale, one key tradeoff, plus a design-review section that challenges its own choices and flags the riskiest decision) and `pipeline/implementation-plan.md` (component/task breakdown, dependency mapping, S/M/L effort, high-risk areas) — before any code exists.
+- **Output:** two committed documents. Still nothing gets built.
+
+### 3 — Developer (turns the plan into code)
 
 - **Role definition:** `.claude/agents/developer-agent.md`
 - **Skills it loads:** `.claude/skills/build-code-skill/SKILL.md` (stack conventions) and, if the change touches the data model, `.claude/skills/migration-safety-skill/SKILL.md`.
 - **Rules it must follow:** everything under `pipeline/rules/*.md` that exists at the time (there are none yet — the first one gets written the first time a shipped bug needs a standing rule against recurring).
-- **What it does:** implements the spec from step 1, in the backend and/or frontend as the spec requires, without expanding scope beyond what the spec says.
+- **What it does:** implements the spec from step 1 following the ADR's decision and the implementation plan's task breakdown from step 2, in the backend and/or frontend as required, without expanding scope beyond what the spec says.
 - **Output:** working code, committed.
 
-### 3 — Tester (checks the code against the spec)
+### 4 — Tester (checks the code against the spec)
 
 - **Role definition:** `.claude/agents/tester-agent.md`
-- **What it does:** writes and runs tests against the Definition of Done in the spec from step 1 — not against what the code happens to do, but against what it was supposed to do.
-- **Output:** test results. If they fail, the loop returns to step 2, not step 1 — the spec doesn't change because the code didn't meet it.
+- **What it does:** writes and runs tests against the Definition of Done in the spec from step 1 — not against what the code happens to do, but against what it was supposed to do — paying particular attention to whatever the ADR flagged as the riskiest decision.
+- **Output:** test results. If they fail, the loop returns to step 3, not step 1 or 2 — the spec and design don't change because the code didn't meet them.
 
 ## Safe recovery
 
@@ -40,11 +47,11 @@ If any step produces something that doesn't match its input (a spec with no Defi
 
 ## Human checkpoints
 
-A human should look at the output of step 1 (the spec) before step 2 starts — specs are cheap to correct, code is not. Everything else can run unattended unless something trips the safe-recovery condition above.
+A human should look at the output of step 1 (the spec) before step 2 starts, and at step 2's design-review section and riskiest-decision flag before step 3 starts — specs and designs are cheap to correct, code is not. Everything else can run unattended unless something trips the safe-recovery condition above.
 
 ## Running this in each tool
 
-- **Claude Code:** the three role files under `.claude/agents/` are real Claude Code subagents (they have the frontmatter Claude Code expects). Say "develop this feature: `<intent>`" and Claude Code should route through them in order, per this document.
-- **GitHub Copilot:** use the matching prompt files in `.github/prompts/` (`ba-agent.prompt.md`, `developer-agent.prompt.md`, `tester-agent.prompt.md`) as slash commands, in the order above, or paste this document into a Copilot Chat session as context.
-- **Codex / any `AGENTS.md`-reading CLI agent:** `AGENTS.md` already points here. Give the same "develop this feature" instruction; the agent should read the three role files under `.claude/agents/` as plain markdown (the YAML header is harmless to ignore) and follow the same three steps.
-- **Anyone without an agent tool:** the three role files are readable specs. Do the three steps yourself, in order.
+- **Claude Code:** the four role files under `.claude/agents/` are real Claude Code subagents (they have the frontmatter Claude Code expects). Say "develop this feature: `<intent>`" and Claude Code should route through them in order, per this document.
+- **GitHub Copilot:** use the matching prompt files in `.github/prompts/` (`ba-agent.prompt.md`, `developer-agent.prompt.md`, `tester-agent.prompt.md`) as slash commands, in the order above — add an equivalent `architect-agent.prompt.md` if this pipeline is driven that way — or paste this document into a Copilot Chat session as context.
+- **Codex / any `AGENTS.md`-reading CLI agent:** `AGENTS.md` already points here. Give the same "develop this feature" instruction; the agent should read the four role files under `.claude/agents/` as plain markdown (the YAML header is harmless to ignore) and follow the same four steps.
+- **Anyone without an agent tool:** the four role files are readable specs. Do the four steps yourself, in order.
