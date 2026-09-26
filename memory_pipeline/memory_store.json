@@ -1,0 +1,50 @@
+{
+  "memories": [
+    {
+      "id": "m-0001",
+      "type": "decision",
+      "namespace": "serviceforge:feature-1:main:dev:specs",
+      "source_task": "feature-1-overlap-booking",
+      "timestamp": "2026-09-20T10:00:00.000Z",
+      "content": "Decision: enforce no-overlap booking by default; when parts conflict, prefer existing confirmed reservations unless manual override by dispatcher.",
+      "tl_dr": "No-overlap booking enforced; prefer existing confirmed reservations; dispatcher override allowed.",
+      "bullets": [
+        "Default policy: no overlapping reservations for the same part and time window.",
+        "Conflict resolution: keep earlier confirmed reservation; notify requester.",
+        "Manual overrides allowed with dispatcher approval."
+      ],
+      "embedding": [
+        0.12,
+        0.08,
+        0.95
+      ],
+      "token_estimate": 48,
+      "importance": 0.8,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
+    },
+    {
+      "id": "m-6ff55a",
+      "type": "fact",
+      "namespace": "serviceforge:feature-2:main:dev:session-xyz",
+      "source_task": "demo-poc",
+      "timestamp": "2026-09-25T09:25:12.699Z",
+      "content": "Observed conflict: part P45 double-booked between 2026-09-20T09:00 and 2026-09-20T10:00.",
+      "tl_dr": "Observed conflict: part P45 double-booked between 2026-09-20T09:00 and 2026-09-20T10:00",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 22,
+      "importance": 0.6,
+      "occurrences": 10,
+      "manual_flag": false,
+      "status": "persisted",
+      "last_seen": "2026-09-26T11:23:10.227Z",
+      "fingerprint": "6986da8b08820bde6459ec054fe0a63c404b6dfa5b4cd4d667d08a1774f3af4e"
+    }
+  ]
+}
