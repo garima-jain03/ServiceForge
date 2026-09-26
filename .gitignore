@@ -10,3 +10,6 @@ frontend/.angular/
 # OS/editor
 .DS_Store
 *.log
+
+# MCP
+node_modules/

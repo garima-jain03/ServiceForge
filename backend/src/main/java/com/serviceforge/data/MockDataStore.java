@@ -2,6 +2,8 @@ package com.serviceforge.data;
 
 import com.serviceforge.model.Job;
 import com.serviceforge.model.JobStatus;
+import com.serviceforge.model.Part;
+import com.serviceforge.model.PartReservation;
 import com.serviceforge.model.Technician;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,10 @@ public class MockDataStore {
 
     private final List<Technician> technicians = new ArrayList<>();
     private final List<Job> jobs = new ArrayList<>();
+    private final List<Part> parts = new ArrayList<>();
+    private final List<PartReservation> partReservations = new ArrayList<>();
     private final AtomicLong jobIdSequence = new AtomicLong(1);
+    private final AtomicLong reservationIdSequence = new AtomicLong(1);
 
     @PostConstruct
     public void seed() {
@@ -43,6 +48,11 @@ public class MockDataStore {
         jobs.add(new Job(nextJobId(), 2L, "Globex", LocalDateTime.now().withHour(10).withMinute(0).withSecond(0).withNano(0),
                 LocalDateTime.now().withHour(12).withMinute(0).withSecond(0).withNano(0),
                 JobStatus.SCHEDULED));
+
+        // Seed a small HVAC parts catalogue — CMP-CLUTCH is intentionally scarce (Feature 2 prep).
+        parts.add(new Part("CMP-CLUTCH", "Compressor Clutch", 1));
+        parts.add(new Part("FLT-16", "16x20 Air Filter", 25));
+        parts.add(new Part("THRM-STAT", "Programmable Thermostat", 8));
     }
 
     public List<Technician> getAllTechnicians() {
@@ -70,5 +80,33 @@ public class MockDataStore {
 
     public Long nextJobId() {
         return jobIdSequence.getAndIncrement();
+    }
+
+    public List<Part> getAllParts() {
+        return Collections.unmodifiableList(parts);
+    }
+
+    public Optional<Part> findPart(String sku) {
+        return parts.stream().filter(p -> p.getSku().equals(sku)).findFirst();
+    }
+
+    public Optional<Job> findJob(Long jobId) {
+        return jobs.stream().filter(j -> j.getId().equals(jobId)).findFirst();
+    }
+
+    /**
+     * Atomically checks and decrements stock so two concurrent reservation requests can never
+     * both succeed against the same last unit (mirrors Feature 1's overlap-check-must-be-atomic lesson).
+     */
+    public synchronized PartReservation reservePart(String sku, Long jobId, int quantity) {
+        Part part = findPart(sku).orElseThrow(() -> new IllegalArgumentException("unknown sku '" + sku + "'"));
+        if (part.getQuantityOnHand() < quantity) {
+            throw new IllegalStateException(
+                    "insufficient stock for " + sku + ": requested " + quantity + ", on hand " + part.getQuantityOnHand());
+        }
+        part.setQuantityOnHand(part.getQuantityOnHand() - quantity);
+        PartReservation reservation = new PartReservation(reservationIdSequence.getAndIncrement(), sku, jobId, quantity);
+        partReservations.add(reservation);
+        return reservation;
     }
 }
