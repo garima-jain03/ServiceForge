@@ -6,6 +6,8 @@ const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
 const { z } = require('zod');
 const http = require('http');
+// wire the demo write hook so tool calls can persist memories
+const { postTurnHook } = require('../../memory_pipeline/writeHook');
 
 const SERVICEFORGE_BASE_URL = process.env.SERVICEFORGE_BASE_URL || 'http://localhost:8080';
 
@@ -65,6 +67,19 @@ async function reservePartForJob({ sku, jobId, quantity }) {
 
   if (status === 201) {
     auditLog({ sku, jobId, quantity, outcome: 'reserved', reservationId: body.id });
+    // non-blocking persistence: record the successful reservation in the memory pipeline
+    try {
+      postTurnHook({
+        type: 'fact',
+        namespace: 'serviceforge:parts:reservations',
+        source_task: 'reserve_part_for_job',
+        content: `Reserved ${quantity} x ${sku} for job ${jobId} (reservationId ${body.id})`,
+        importance: 0.7,
+      });
+    } catch (err) {
+      // never fail the tool because of persistence issues; log to stderr for debug
+      auditLog({ event: 'writeHook_error', message: String(err && err.message ? err.message : err) });
+    }
     return {
       content: [
         {

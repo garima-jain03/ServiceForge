@@ -45,6 +45,90 @@
       "status": "persisted",
       "last_seen": "2026-09-26T11:23:10.227Z",
       "fingerprint": "6986da8b08820bde6459ec054fe0a63c404b6dfa5b4cd4d667d08a1774f3af4e"
+    },
+    {
+      "id": "m-560ab9",
+      "fingerprint": "50912e24d2ed9726841517e0953b00a482f3fb4f393fc23589b7d58551c23a50",
+      "type": "fact",
+      "namespace": "serviceforge:cli-test",
+      "source_task": "cli-test",
+      "timestamp": "2026-09-29T08:08:05.377Z",
+      "content": "CLI test memory from user",
+      "tl_dr": "CLI test memory from user",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 7,
+      "importance": 0.9,
+      "occurrences": 1,
+      "manual_flag": true,
+      "status": "persisted"
+    },
+    {
+      "id": "m-7cea62",
+      "fingerprint": "e803dafa0d95591e2852ee9ac9d43a76b8a7e427a6576dadb74e7d303ba50f00",
+      "type": "fact",
+      "namespace": "serviceforge:parts:reservations",
+      "source_task": "reserve_part_for_job",
+      "timestamp": "2026-09-29T08:10:35.494Z",
+      "content": "Reserved 1 x THRM-STAT for job 1 (reservationId 2)",
+      "tl_dr": "Reserved 1 x THRM-STAT for job 1 (reservationId 2)",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 13,
+      "importance": 0.7,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
+    },
+    {
+      "id": "m-93f93d",
+      "fingerprint": "eddc7c96355d52acbd9db4f6ef40b7ee31bb0b7f4fac877348431be7fee239db",
+      "type": "event",
+      "namespace": "serviceforge:feature-2:orchestrator",
+      "source_task": "orchestrator-agent",
+      "timestamp": "2026-09-29T08:32:22.013Z",
+      "content": "Feature 2: design-sign-off gate blocked (ADR status Proposed); Developer-step artifacts already present before sign-off - anomaly flagged, no further dispatch until a human clears the ADR.",
+      "tl_dr": "Feature 2: design-sign-off gate blocked (ADR status Proposed); Developer-step artifacts already present before sign-off - anomaly flagged, no further dispatch until a human clears the ADR",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 47,
+      "importance": 0.75,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
+    },
+    {
+      "id": "m-3b20d7",
+      "fingerprint": "45d7d44b4532998b53d20a7a9f34eabe469ca2cdbaf4de65ce04a52ede794fb1",
+      "type": "fact",
+      "namespace": "serviceforge:parts:reservations",
+      "source_task": "reserve_part_for_job",
+      "timestamp": "2026-09-29T08:42:49.644Z",
+      "content": "Reserved 1 x THRM-STAT for job 1 (reservationId 3)",
+      "tl_dr": "Reserved 1 x THRM-STAT for job 1 (reservationId 3)",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 13,
+      "importance": 0.7,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
     }
   ]
 }
