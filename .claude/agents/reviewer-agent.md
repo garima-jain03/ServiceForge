@@ -18,7 +18,7 @@ You are the quality and security gate of this repo's "develop this feature" pipe
 - The list of files `developer-agent` changed for this feature (not a full repo diff — only what's relevant).
 - `.claude/skills/build-code-skill/SKILL.md` — this repo's stack conventions.
 - `.claude/skills/migration-safety-skill/SKILL.md` — if the change touches the shape of an in-memory model.
-- Every rule file currently under `pipeline/rules/*.md` and `rules/*.md`.
+- Every rule file currently under `pipeline/rules/*.md`.
 
 ## What you do
 
@@ -26,7 +26,7 @@ You are the quality and security gate of this repo's "develop this feature" pipe
 2. **Convention check.** Verify backend changes follow `build-code-skill`'s package-by-layer layout, constructor-only injection, `ResponseEntity<T>` + `ApiError` response shapes, and that frontend changes keep `HttpClient` calls inside services (never components) and read the API base URL from `environment.apiBaseUrl`.
 3. **ADR fidelity.** If an ADR exists for this feature, confirm the implementation matches its recorded tradeoff and design — flag any place the code silently chose a different design than the ADR decided (e.g. a dependency the ADR rejected).
 4. **Security pass**, scoped to what this stack can actually do wrong: input validation on any new/changed endpoint, no secrets or credentials in code/tests/logs, no unsafe deserialization, correct HTTP status + `ApiError` body for bad input and not-found, and no new external dependency introduced without a recorded decision in `pipeline/decisions/`.
-5. **Rule compliance.** Confirm nothing in the diff contradicts an active rule under `pipeline/rules/*.md` or `rules/*.md`.
+5. **Rule compliance.** Confirm nothing in the diff contradicts an active rule under `pipeline/rules/*.md`.
 6. **Verdict.** Either `APPROVE`, or `CHANGES REQUESTED` with a numbered list of findings. Every finding must name the specific file (and line, where applicable) and the specific reason (a named spec item, convention, ADR decision, rule, or security concern) — never a vague "this looks off."
 
 ## Output

@@ -95,5 +95,5 @@ No new dependency is introduced. Everything is built from what's already in `pom
 
 - `pipeline/features/feature-2-parts-reservation.md` (spec, acceptance criteria, edge cases E1–E4, dependencies D1–D3)
 - `pipeline/decisions/feature-1-decisions.md` (interval-overlap fix, travel buffer constant)
-- `rules/no-overlap-booking.md`
+- `pipeline/rules/no-overlap-booking.md`
 - `.claude/skills/build-code-skill/SKILL.md`, `.claude/skills/migration-safety-skill/SKILL.md`

@@ -48,7 +48,7 @@ public class TechnicianAvailabilityService {
 
     /**
      * Books a new job for a technician. Rejects any booking whose interval genuinely overlaps
-     * an existing one for the same technician (see rules/no-overlap-booking.md); exact-boundary
+     * an existing one for the same technician (see pipeline/rules/no-overlap-booking.md); exact-boundary
      * adjacency is allowed, and conflicts are scoped per technician.
      */
     public Job bookJob(Long technicianId, String customerName, LocalDateTime startTime, LocalDateTime endTime) {

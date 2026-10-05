@@ -17,7 +17,7 @@ You are the design step of this repo's "develop this feature" pipeline (see `pip
 - Every decision it names as a dependency, from `pipeline/decisions/`.
 - `.claude/skills/build-code-skill/SKILL.md` — this repo's stack conventions (package layout, DI style, REST shapes).
 - `.claude/skills/migration-safety-skill/SKILL.md` — if the spec implies any new or changed model.
-- Every rule file currently under `pipeline/rules/*.md` and `rules/*.md`, if any exist.
+- Every rule file currently under `pipeline/rules/*.md`, if any exist.
 
 ## What you do
 

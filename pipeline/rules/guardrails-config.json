@@ -1,0 +1,10 @@
+{
+  "perTenantDailyTokenBudget": { "free": 100000, "paid": 2000000 },
+  "perCallSoftLimitTokens": 20000,
+  "perCallHardLimitTokens": 50000,
+  "criticMaxRetries": 2,
+  "irreversibilityActions": ["issue_refund", "delete_database", "drop_table", "destroy"],
+  "tenantScopeRestrictions": { "free": ["delete_database", "drop_table"] },
+  "promptInjectionPatterns": ["ignore prior", "ignore previous", "ignore instructions", "refund $"],
+  "promptInjectionSensitivity": "high"
+}

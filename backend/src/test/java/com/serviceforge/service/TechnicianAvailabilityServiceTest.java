@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
- * Covers Feature 1's interval-overlap conflict rule (see rules/no-overlap-booking.md and
+ * Covers Feature 1's interval-overlap conflict rule (see pipeline/rules/no-overlap-booking.md and
  * pipeline/decisions/feature-1-decisions.md): exact-start conflicts, genuine interval overlaps,
  * containment in both directions, exact-boundary adjacency (allowed), and per-technician
  * isolation (an identical window is fine for a different technician).

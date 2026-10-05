@@ -43,15 +43,24 @@ Pass only what the next agent needs — never a full conversation replay, and ne
 
 ## What you do
 
-1. **Pre-flight.** Read `pipeline/orchestration.md`, the current contents of `pipeline/features/` and `pipeline/decisions/`, and every `pipeline/rules/*.md` / `rules/*.md` file. Determine the next unused feature number, or resume an in-flight one by reading its last recorded state instead of guessing.
+1. **Pre-flight.** Read `pipeline/orchestration.md`, the current contents of `pipeline/features/` and `pipeline/decisions/`, and every `pipeline/rules/*.md` file. Determine the next unused feature number, or resume an in-flight one by reading its last recorded state instead of guessing.
 2. **Step 1 — BA.** Invoke `ba-agent` with the raw intent. Verify the spec has a named `Depends on` (a specific prior decision, never "the previous feature" in general), a concrete `Out of scope`, and a checkable Definition of Done. State: `SPEC_DRAFTED`.
    - **Human checkpoint:** present the spec and wait for confirmation before calling `architect-agent`. State on confirmation: `SPEC_CONFIRMED`.
 3. **Step 2 — Architect.** Invoke `architect-agent` against the confirmed spec. Verify the ADR names a specific tradeoff and a riskiest-decision flag, and every implementation-plan task traces to a specific spec item. State: `DESIGNED`.
    - **Human checkpoint:** present the design-review section and riskiest-decision flag and wait for confirmation before calling `developer-agent`. State on confirmation: `DESIGN_CONFIRMED`.
 4. **Step 3 — Developer.** Invoke `developer-agent` with the spec, ADR, and plan locations only. Verify the committed diff matches the plan's task breakdown and does not expand scope. State: `IMPLEMENTED`.
+   
+    - **Guardrail check (token & risk):** Before calling `developer-agent` and again immediately after it commits, run the guardrails enforcer (tools/guardrails/enforcer.js) to:
+       - validate the estimated token budget for the upcoming run and block the flow if the per-call hard limit is exceeded (append a decision log line and require human override),
+       - classify action risk for the planned changes and flag `irreversible` actions to require explicit human signoff.
+       - detect prompt-injection patterns in any retrieved or authored text and block if present with evidence returned to developer for remediation.
 5. **Step 4 — Reviewer (quality/security gate).** Invoke `reviewer-agent` with the minimum context above. State: `IN_REVIEW`.
    - On `CHANGES REQUESTED`: state `REVIEW_CHANGES_REQUESTED`, hand only the findings back to `developer-agent`, and re-review. Cap this Developer↔Reviewer cycle at 2 rounds; if still not approved, stop and escalate (state `ESCALATED`) rather than letting unapproved code reach the tester.
    - On `APPROVE`: state `REVIEWED`.
+
+   - **Critic invocation (new gate):** Immediately after `developer-agent` commits and before the reviewer verdict is accepted, the orchestrator calls `critic-agent` with a small plan summary and the execution trace. The critic returns `{ pass: boolean, reasons: [], suggested_fix?: string }`.
+      - If `pass:false` the orchestrator appends a `CRITIC_FAIL` line to the feature decision log and routes the critic reasons back to `developer-agent` as the only input for the next iteration. Maintain a per-feature critic retry counter in the decisions file; allow up to `criticMaxRetries` (configured in `pipeline/rules/guardrails-config.json`, default 2). On exceeding retries set `ESCALATED` and require human intervention.
+      - If `pass:true` proceed to `reviewer-agent` as usual.
 6. **Step 5 — Tester.** Invoke `tester-agent` with the minimum context above. State: `TESTING`.
    - On failure, first diagnose **where the failure actually lives** before routing it anywhere:
      - If the root cause is in the code `developer-agent` just wrote for this feature, state `TEST_FAILED`, send only the failing item(s) back to `developer-agent`, and **route back through the Reviewer gate again** before re-testing — a fix is still unreviewed code. Cap this Developer→Reviewer→Tester cycle at 2 full rounds.

@@ -31,7 +31,7 @@ That one line is the only input. Everything else below is how it gets turned int
 
 - **Role definition:** `.claude/agents/developer-agent.md`
 - **Skills it loads:** `.claude/skills/build-code-skill/SKILL.md` (stack conventions) and, if the change touches the data model, `.claude/skills/migration-safety-skill/SKILL.md`.
-- **Rules it must follow:** everything under `pipeline/rules/*.md` that exists at the time (there are none yet — the first one gets written the first time a shipped bug needs a standing rule against recurring).
+- **Rules it must follow:** everything under `pipeline/rules/*.md` that exists at the time.
 - **What it does:** implements the spec from step 1 following the ADR's decision and the implementation plan's task breakdown from step 2, in the backend and/or frontend as required, without expanding scope beyond what the spec says.
 - **Output:** working code, committed.
 
@@ -39,7 +39,7 @@ That one line is the only input. Everything else below is how it gets turned int
 
 - **Role definition:** `.claude/agents/reviewer-agent.md`
 - **Skills it loads:** `.claude/skills/build-code-skill/SKILL.md` and, if the change touches a model's shape, `.claude/skills/migration-safety-skill/SKILL.md`.
-- **What it does:** reviews the developer's diff against the spec's scope, the ADR's recorded tradeoff, this repo's stack conventions, basic security hygiene, and every active rule under `pipeline/rules/*.md` / `rules/*.md` — and renders an `APPROVE` or `CHANGES REQUESTED` verdict with specific, named findings. It never writes or fixes code itself.
+- **What it does:** reviews the developer's diff against the spec's scope, the ADR's recorded tradeoff, this repo's stack conventions, basic security hygiene, and every active rule under `pipeline/rules/*.md` — and renders an `APPROVE` or `CHANGES REQUESTED` verdict with specific, named findings. It never writes or fixes code itself.
 - **Output:** a review verdict. Code never reaches step 5 without an `APPROVE` here. On `CHANGES REQUESTED`, the loop returns to step 3 with only the findings as new input, then comes back through this gate again before testing.
 
 ### 5 — Tester (checks the code against the spec)
