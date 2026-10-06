@@ -6,6 +6,7 @@ import com.serviceforge.dto.ReservePartRequest;
 import com.serviceforge.model.PartReservation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,5 +36,12 @@ public class PartController {
         } catch (IllegalStateException e) {
             return ResponseEntity.status(409).body(new ApiError(e.getMessage()));
         }
+    }
+
+    @GetMapping("/{sku}")
+    public ResponseEntity<?> getPart(@PathVariable String sku) {
+        return dataStore.findPart(sku)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(404).body(new ApiError("unknown sku '" + sku + "'")));
     }
 }

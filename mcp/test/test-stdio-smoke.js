@@ -18,16 +18,14 @@ async function run() {
   const tools = await client.listTools();
   console.log('tools/list ->', tools.tools.map((t) => t.name));
 
-  const result = await client.callTool({
-    name: 'reserve_part_for_job',
-    arguments: { sku: 'THRM-STAT', jobId: 1, quantity: 1 },
-  });
+  const reserveArgs1 = { sku: 'THRM-STAT', jobId: 1, quantity: 15 };
+  console.log('calling reserve_part_for_job with ->', reserveArgs1);
+  const result = await client.callTool({ name: 'reserve_part_for_job', arguments: reserveArgs1 });
   console.log('tools/call reserve_part_for_job ->', result.content[0].text);
 
-  const badResult = await client.callTool({
-    name: 'reserve_part_for_job',
-    arguments: { sku: 'THRM-STAT', jobId: 1, quantity: 999 },
-  });
+  const reserveArgs2 = { sku: 'FLT-16', jobId: 2, quantity: 999 };
+  console.log('calling reserve_part_for_job with ->', reserveArgs2);
+  const badResult = await client.callTool({ name: 'reserve_part_for_job', arguments: reserveArgs2 });
   console.log('tools/call (409 expected) ->', badResult.isError, badResult.content[0].text);
 
   await client.close();

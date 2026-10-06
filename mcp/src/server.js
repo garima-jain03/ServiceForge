@@ -11,9 +11,11 @@ const { postTurnHook } = require('../../memory_pipeline/writeHook');
 
 const SERVICEFORGE_BASE_URL = process.env.SERVICEFORGE_BASE_URL || 'http://localhost:8080';
 
+// Audit log prefix is configurable so this server can be reused for different tool bundles.
+const MCP_TOOL_PREFIX = process.env.MCP_TOOL_PREFIX || 'mcp-tool';
 // stderr only — never a full body, never a customer name (this tool never receives one).
 function auditLog(event) {
-  process.stderr.write(`[parts-stock-tool] ${JSON.stringify(event)}\n`);
+  process.stderr.write(`[${MCP_TOOL_PREFIX}] ${JSON.stringify(event)}\n`);
 }
 
 /** POST {sku}/reservations against ServiceForge. Resolves to { status, body }, never throws on HTTP error status. */
@@ -115,6 +117,85 @@ async function reservePartForJob({ sku, jobId, quantity }) {
   return { isError: true, content: [{ type: 'text', text: message }] };
 }
 
+// exported read handlers so tests can invoke them directly
+async function getPartStock({ sku }) {
+  const url = new URL(`/api/parts/${encodeURIComponent(sku)}`, SERVICEFORGE_BASE_URL);
+  try {
+    const response = await new Promise((resolve, reject) => {
+      const req = http.request(url, { method: 'GET' }, (res) => {
+        let raw = '';
+        res.on('data', (c) => (raw += c));
+        res.on('end', () => {
+          let body;
+          try {
+            body = raw ? JSON.parse(raw) : {};
+          } catch {
+            body = { message: raw };
+          }
+          resolve({ status: res.statusCode, body });
+        });
+      });
+      req.on('error', reject);
+      req.end();
+    });
+
+    const { status, body } = response;
+    if (status === 200) {
+      auditLog({ sku, outcome: 'queried' });
+      // MCP client expects content items like text/image/resource; return JSON as text
+      return { content: [{ type: 'text', text: JSON.stringify({ sku: body.sku, quantityOnHand: body.quantityOnHand }) }] };
+    }
+    if (status === 404) {
+      auditLog({ sku, outcome: 'unknown_sku' });
+      return { isError: true, content: [{ type: 'text', text: `unknown sku '${sku}'` }] };
+    }
+    return { isError: true, content: [{ type: 'text', text: `ServiceForge returned status ${status}` }] };
+  } catch (err) {
+    const message = `ServiceForge at ${SERVICEFORGE_BASE_URL} did not respond; is mvn spring-boot:run up?`;
+    auditLog({ sku, outcome: 'unreachable' });
+    return { isError: true, content: [{ type: 'text', text: message }] };
+  }
+}
+
+async function getTechnicianAvailability({ technicianId }) {
+  const url = new URL(`/api/technicians/${encodeURIComponent(technicianId)}/jobs`, SERVICEFORGE_BASE_URL);
+  try {
+    const response = await new Promise((resolve, reject) => {
+      const req = http.request(url, { method: 'GET' }, (res) => {
+        let raw = '';
+        res.on('data', (c) => (raw += c));
+        res.on('end', () => {
+          let body;
+          try {
+            body = raw ? JSON.parse(raw) : {};
+          } catch {
+            body = { message: raw };
+          }
+          resolve({ status: res.statusCode, body });
+        });
+      });
+      req.on('error', reject);
+      req.end();
+    });
+
+    const { status, body } = response;
+    if (status === 200) {
+      auditLog({ technicianId, outcome: 'queried' });
+      // Return as text so MCP client accepts the content shape; callers can JSON.parse the text
+      return { content: [{ type: 'text', text: JSON.stringify({ technicianId, jobs: body }) }] };
+    }
+    if (status === 404) {
+      auditLog({ technicianId, outcome: 'unknown_technician' });
+      return { isError: true, content: [{ type: 'text', text: `No technician with id ${technicianId}` }] };
+    }
+    return { isError: true, content: [{ type: 'text', text: `ServiceForge returned status ${status}` }] };
+  } catch (err) {
+    const message = `ServiceForge at ${SERVICEFORGE_BASE_URL} did not respond; is mvn spring-boot:run up?`;
+    auditLog({ technicianId, outcome: 'unreachable' });
+    return { isError: true, content: [{ type: 'text', text: message }] };
+  }
+}
+
 function createServer() {
   const server = new McpServer({ name: 'serviceforge-parts-stock', version: '1.0.0' });
 
@@ -134,6 +215,29 @@ function createServer() {
     async ({ sku, jobId, quantity }) => reservePartForJob({ sku, jobId, quantity })
   );
 
+  server.registerTool(
+    'get_part_stock',
+    {
+      description: 'Read-only: return current quantity on hand for a part SKU (no side effects).',
+      inputSchema: {
+        sku: z.string().min(1).describe('Part SKU, e.g. CMP-CLUTCH.'),
+      },
+    },
+    async ({ sku }) => getPartStock({ sku })
+  );
+
+  server.registerTool(
+    'get_technician_availability',
+    {
+      description:
+        'Read-only: return the scheduled jobs for a technician. Use to display availability and verify a job slot before reservation.',
+      inputSchema: {
+        technicianId: z.number().int().min(1).describe('Existing technician id.'),
+      },
+    },
+    async ({ technicianId }) => getTechnicianAvailability({ technicianId })
+  );
+
   return server;
 }
 
@@ -151,4 +255,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createServer, reservePartForJob };
+module.exports = { createServer, reservePartForJob, getPartStock, getTechnicianAvailability };

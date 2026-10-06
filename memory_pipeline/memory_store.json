@@ -84,9 +84,10 @@
       ],
       "token_estimate": 13,
       "importance": 0.7,
-      "occurrences": 1,
+      "occurrences": 2,
       "manual_flag": false,
-      "status": "persisted"
+      "status": "persisted",
+      "last_seen": "2026-10-05T17:31:12.370Z"
     },
     {
       "id": "m-93f93d",
@@ -118,6 +119,91 @@
       "timestamp": "2026-09-29T08:42:49.644Z",
       "content": "Reserved 1 x THRM-STAT for job 1 (reservationId 3)",
       "tl_dr": "Reserved 1 x THRM-STAT for job 1 (reservationId 3)",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 13,
+      "importance": 0.7,
+      "occurrences": 2,
+      "manual_flag": false,
+      "status": "persisted",
+      "last_seen": "2026-10-05T17:31:28.810Z"
+    },
+    {
+      "id": "m-10d7f8",
+      "fingerprint": "b6fc5240395b76d54a6b7ed79089efbdd55acccb6b8e8e91dca415aea57c067c",
+      "type": "fact",
+      "namespace": "serviceforge:parts:reservations",
+      "source_task": "reserve_part_for_job",
+      "timestamp": "2026-10-05T17:08:16.685Z",
+      "content": "Reserved 1 x THRM-STAT for job 1 (reservationId 1)",
+      "tl_dr": "Reserved 1 x THRM-STAT for job 1 (reservationId 1)",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 13,
+      "importance": 0.7,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
+    },
+    {
+      "id": "m-9d5b2a",
+      "fingerprint": "c97a041d538005d38a4c2d6b466942134eb679c9a869557ad0d4053c7298e1a3",
+      "type": "fact",
+      "namespace": "serviceforge:parts:reservations",
+      "source_task": "reserve_part_for_job",
+      "timestamp": "2026-10-05T17:34:59.326Z",
+      "content": "Reserved 1 x FLT-16 for job 2 (reservationId 4)",
+      "tl_dr": "Reserved 1 x FLT-16 for job 2 (reservationId 4)",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 12,
+      "importance": 0.7,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
+    },
+    {
+      "id": "m-44d6aa",
+      "fingerprint": "89edb6bb7b4cfe37b884486384d8ce978b23ad80d22c893f260b0c13662138d5",
+      "type": "fact",
+      "namespace": "serviceforge:parts:reservations",
+      "source_task": "reserve_part_for_job",
+      "timestamp": "2026-10-05T17:37:59.044Z",
+      "content": "Reserved 1 x FLT-16 for job 2 (reservationId 5)",
+      "tl_dr": "Reserved 1 x FLT-16 for job 2 (reservationId 5)",
+      "bullets": [],
+      "embedding": [
+        0,
+        0,
+        0
+      ],
+      "token_estimate": 12,
+      "importance": 0.7,
+      "occurrences": 1,
+      "manual_flag": false,
+      "status": "persisted"
+    },
+    {
+      "id": "m-70673e",
+      "fingerprint": "79b7ffe8aa996ced70eb8fe8b48c1aaf430535d354ad2885f579abf70c88a5ad",
+      "type": "fact",
+      "namespace": "serviceforge:parts:reservations",
+      "source_task": "reserve_part_for_job",
+      "timestamp": "2026-10-05T17:43:02.122Z",
+      "content": "Reserved 2 x THRM-STAT for job 1 (reservationId 6)",
+      "tl_dr": "Reserved 2 x THRM-STAT for job 1 (reservationId 6)",
       "bullets": [],
       "embedding": [
         0,
