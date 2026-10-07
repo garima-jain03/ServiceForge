@@ -109,4 +109,35 @@ public class MockDataStore {
         partReservations.add(reservation);
         return reservation;
     }
+
+    public Optional<PartReservation> findReservation(Long reservationId) {
+        return partReservations.stream().filter(r -> r.getId().equals(reservationId)).findFirst();
+    }
+
+    public List<PartReservation> getReservationsForJob(Long jobId) {
+        return partReservations.stream()
+                .filter(r -> r.getJobId().equals(jobId) && r.getStatus() == PartReservation.Status.ACTIVE)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Restores the released quantity to on-hand stock in the same critical section as the
+     * status flip, mirroring reservePart's atomic check-then-mutate pattern.
+     */
+    public synchronized boolean releaseReservation(Long reservationId) {
+        Optional<PartReservation> found = findReservation(reservationId);
+        if (found.isEmpty() || found.get().getStatus() == PartReservation.Status.RELEASED) {
+            return false;
+        }
+        PartReservation reservation = found.get();
+        reservation.release();
+        findPart(reservation.getSku()).ifPresent(part -> part.setQuantityOnHand(part.getQuantityOnHand() + reservation.getQuantity()));
+        return true;
+    }
+
+    public synchronized void releaseAllForJob(Long jobId) {
+        partReservations.stream()
+                .filter(r -> r.getJobId().equals(jobId) && r.getStatus() == PartReservation.Status.ACTIVE)
+                .forEach(r -> releaseReservation(r.getId()));
+    }
 }

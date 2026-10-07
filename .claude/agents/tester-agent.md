@@ -16,6 +16,7 @@ You are the verification step of this repo's "develop this feature" pipeline (se
 - The feature spec at `pipeline/features/feature-N-<slug>.md`, specifically its Definition of Done.
 - `pipeline/architecture-adr.md`, if one exists for this feature — specifically its design-review section and whatever it names as the riskiest decision.
 - The code the developer agent just produced.
+- For Feature 2 specifically, see `.claude/agents/qa-agent.md`, which extends this role with repo-local test-plan tracing.
 
 ## What you do
 

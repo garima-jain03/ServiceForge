@@ -74,4 +74,38 @@ public class TechnicianAvailabilityService {
         Job job = new Job(dataStore.nextJobId(), technicianId, customerName, startTime, endTime, JobStatus.SCHEDULED);
         return dataStore.save(job);
     }
+
+    /**
+     * Re-runs the live interval-overlap check for an existing job rather than trusting a result
+     * cached at booking time (Feature 2 spec D1/E4): a job is a valid reservation target only if
+     * it still exists, is SCHEDULED, and its interval no longer conflicts with another booking
+     * for the same technician.
+     */
+    public boolean isValidNonOverlapping(Long jobId) {
+        Optional<Job> jobOpt = dataStore.findJob(jobId);
+        if (jobOpt.isEmpty()) {
+            return false;
+        }
+        Job job = jobOpt.get();
+        if (job.getStatus() != JobStatus.SCHEDULED) {
+            return false;
+        }
+        List<Job> existingJobs = dataStore.getJobsForTechnician(job.getTechnicianId());
+        boolean hasConflict = existingJobs.stream()
+                .filter(existing -> !existing.getId().equals(job.getId()))
+                .anyMatch(existing -> job.getStartTime().isBefore(existing.getEndTime())
+                        && existing.getStartTime().isBefore(job.getEndTime()));
+        return !hasConflict;
+    }
+
+    /**
+     * Transitions a job to CANCELLED. Feature 2 hooks into this to release any reservations
+     * tied to the job in the same operation (spec AC-8/E2).
+     */
+    public Job cancelJob(Long jobId) {
+        Job job = dataStore.findJob(jobId)
+                .orElseThrow(() -> new IllegalArgumentException("No job with id " + jobId));
+        job.setStatus(JobStatus.CANCELLED);
+        return job;
+    }
 }

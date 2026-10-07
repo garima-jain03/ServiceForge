@@ -11,6 +11,9 @@ public class ReservePartRequest {
     @Min(1)
     private int quantity;
 
+    // Optional free-text field; never persisted, only screened by PromptInjectionGuard (RULE job-notes-injection-guardrail).
+    private String notes;
+
     public Long getJobId() {
         return jobId;
     }
@@ -25,5 +28,13 @@ public class ReservePartRequest {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 }

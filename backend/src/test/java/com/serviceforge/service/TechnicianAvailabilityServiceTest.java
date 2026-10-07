@@ -2,13 +2,16 @@ package com.serviceforge.service;
 
 import com.serviceforge.data.MockDataStore;
 import com.serviceforge.model.Job;
+import com.serviceforge.model.JobStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Covers Feature 1's interval-overlap conflict rule (see pipeline/rules/no-overlap-booking.md and
@@ -114,5 +117,36 @@ class TechnicianAvailabilityServiceTest {
         Job job = service.bookJob(3L, "Different Technician Customer", start, end);
 
         assertEquals(3L, job.getTechnicianId());
+    }
+
+    // Feature 2 spec D1/E4 — isValidNonOverlapping is the live gate Feature 2's reservation
+    // logic depends on; covered here at the source rather than only through Feature 2's tests.
+    @Test
+    void isValidNonOverlapping_trueForSeededScheduledJob() {
+        assertTrue(service.isValidNonOverlapping(1L));
+    }
+
+    @Test
+    void isValidNonOverlapping_falseForUnknownJob() {
+        assertFalse(service.isValidNonOverlapping(999L));
+    }
+
+    @Test
+    void isValidNonOverlapping_falseAfterCancellation() {
+        service.cancelJob(1L);
+
+        assertFalse(service.isValidNonOverlapping(1L));
+    }
+
+    @Test
+    void cancelJob_setsStatusToCancelled() {
+        Job job = service.cancelJob(1L);
+
+        assertEquals(JobStatus.CANCELLED, job.getStatus());
+    }
+
+    @Test
+    void cancelJob_throwsForUnknownJob() {
+        assertThrows(IllegalArgumentException.class, () -> service.cancelJob(999L));
     }
 }

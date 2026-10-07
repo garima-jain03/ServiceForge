@@ -1,0 +1,23 @@
+name: Feature 2 backend tests
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/feature2-tests.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Run backend tests (qa-agent pipeline stage)
+        run: mvn -f backend test
