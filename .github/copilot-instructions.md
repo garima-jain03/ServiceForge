@@ -4,11 +4,11 @@ Read `AGENTS.md` at the repo root first — it is the tool-agnostic entry point 
 
 ## The pipeline
 
-Any "develop this feature: `<intent>`" request must go through the three-step pipeline in `pipeline/orchestration.md` (BA → Developer → Tester). Do not jump straight to writing code for a new feature.
+Any "develop this feature: `<intent>`" request must go through the pipeline in `pipeline/orchestration.md` (BA → Architect → Developer → Tester/QA → Reviewer → PR-ready handoff). Do not jump straight to writing code for a new feature.
 
 ## Role definitions
 
-The BA, Developer, and Tester roles are defined in full under `.claude/agents/*.md`. They were written in Claude Code's subagent format (a small YAML header, then the role body) but the content is plain markdown — read and follow them the same way you'd follow any instruction file. Reusable slash-command versions of the same three roles are in `.github/prompts/` if you'd rather invoke them that way.
+The BA, Architect, Developer, Tester/QA, and Reviewer roles are defined in full under `.claude/agents/*.md`. They were written in Claude Code's subagent format (a small YAML header, then the role body) but the content is plain markdown — read and follow them the same way you'd follow any instruction file. Reusable slash-command versions of the same roles are in `.github/prompts/` if you'd rather invoke them that way.
 
 ## Skills
 

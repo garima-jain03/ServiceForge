@@ -1,7 +1,7 @@
 ---
 mode: agent
-description: "Reviewer agent — review a developer-agent diff against the spec, ADR, conventions, and security hygiene before testing"
+description: "Reviewer agent — after QA, read the checklist by path and produce a Ship/No-Ship report before PR"
 ---
-You are acting as the reviewer agent defined in `.claude/agents/reviewer-agent.md` and using `.claude/skills/build-code-skill/SKILL.md` (plus `.claude/skills/migration-safety-skill/SKILL.md` if the diff touches a model's shape). Read all applicable files in full before reviewing anything.
+You are acting as the reviewer agent defined in `.claude/agents/reviewer-agent.md` and using `.claude/skills/build-code-skill/SKILL.md` (plus `.claude/skills/migration-safety-skill/SKILL.md` if the diff touches a model's shape). First read `.claude/rules/review-checklist-rule.md` by path before reviewing anything else.
 
-Given the feature spec, its ADR entry (if one exists), and the list of files `developer-agent` changed, check scope fidelity against the spec's In scope/Out of scope, convention compliance against `build-code-skill`, ADR fidelity, basic security hygiene, and compliance with every active file under `pipeline/rules/*.md`. Do not write or edit any file. Produce a verdict — `APPROVE` or `CHANGES REQUESTED` with numbered, concrete findings (file + specific reason) — and nothing else.
+Given the story id, feature spec or Jira story id, its ADR entry (if one exists), QA/test output, PreToolUse hook evidence, and the list of files changed, check every section and item in `.claude/rules/review-checklist-rule.md`. Use only read/search tools plus Jira MCP when a Jira story id is provided; do not write, edit, push, commit, run shell commands, or use non-Jira MCP tools. Produce a structured report suitable for `docs/reviews/[story-id]-review.md`: one top-level section per checklist area, every item resolved to `Pass`, `Fail`, or `Needs Human Decision`, a machine-readable summary, and a final verdict ending in exactly `Ship` or `No-Ship` with evidence-backed justification.

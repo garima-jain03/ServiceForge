@@ -22,7 +22,7 @@ npm start                    # serves http://localhost:4200
 
 ## The one rule every agent follows here
 
-**"Develop this feature" is a standing instruction, not a one-off prompt.** Whenever anyone (human or agent) says "develop this feature: <intent>", the work must go through the pipeline defined in **[`pipeline/orchestration.md`](pipeline/orchestration.md)** — BA → Developer → Tester, in that order, with the relevant skills and rules loaded dynamically. Do not skip straight to writing code.
+**"Develop this feature" is a standing instruction, not a one-off prompt.** Whenever anyone (human or agent) says "develop this feature: <intent>", the work must go through the pipeline defined in **[`pipeline/orchestration.md`](pipeline/orchestration.md)** — BA → Architect → Developer → Tester/QA → Reviewer → PR-ready handoff, in that order, with the relevant skills and rules loaded dynamically. Do not skip straight to writing code.
 
 ## Where things live
 
